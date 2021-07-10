@@ -11,43 +11,17 @@ static SERIAL_IO_PORT: u16 = 0xf4;
 pub extern "C" fn _start() -> ! {
     let vga_buffer = 0xb8000 as *mut u8;
     let mut keyboard = Port::<u32>::new(0x60);
-    /*
-    let mut keyboard = Keyboard::new(
-        layouts::Uk105Key,
-        ScancodeSet2,
-        HandleControl::MapLettersToUnicode,
-    );*/
-
-    unsafe {
-        write(vga_buffer, 0, 0);
-    }
-
-    unsafe {
-        loop {
+    loop {
+        unsafe {
             let data = read(&mut keyboard);
-            display(vga_buffer, data);
-            /*
-            match keyboard.add_byte(data) {
-                Ok(Some(event)) => match event.state {
-                    KeyState::Down => {
-                        let event_code = event.code as u32;
-                        output_number(vga_buffer, event_code);
-                    }
-                    _ => {
-                        break;
-                    }
-                },
-                Ok(None) => {
-                    continue;
-                }
-                Err(e) => {
-                    output(vga_buffer, 10, 42);
-                }
-            }
-            */
+            display(vga_buffer, data, 2, 100);
+            display(vga_buffer, data >> 24, 2, 0);
+            display(vga_buffer, data >> 24, 10, 40);
+            display(vga_buffer, (data >> 16) % 256, 2, 9);
+            display(vga_buffer, (data >> 8) % 256, 2, 18);
+            display(vga_buffer, data % 256, 2, 27);
         }
     }
-
     unsafe {
         exit();
     }
@@ -73,20 +47,19 @@ pub unsafe fn exit() {
     port.write(54);
 }
 
-pub unsafe fn display(buffer: *mut u8, number: u32) {
-    let mut n = number;
+pub unsafe fn display(buffer: *mut u8, number: u32, base: u32, offset: usize) {
+    let mut n = number % 1_000_000_000;
     let mut divisor = 1;
     let mut digits = 1;
-    while n >= divisor * 10 {
-        divisor *= 10;
+    while divisor * base <= n {
+        divisor *= base;
         digits += 1;
     }
     for i in 0..digits {
-        // let digit = n / divisor;
-        let digit = number % 10;
-        write(buffer, i, (digit + 48) as u8);
-        // n %= divisor;
-        // divisor /= 10;
+        let digit = n / divisor;
+        write(buffer, offset + i, (digit + 48) as u8);
+        n %= divisor;
+        divisor /= base;
     }
 }
 

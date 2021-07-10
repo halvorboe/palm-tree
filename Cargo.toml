@@ -11,4 +11,4 @@ x86_64 = "*"
 pc-keyboard = "0.5.1"
 
 [package.metadata.bootimage]
-run-args = ["-serial", "stdio", "-enable-kvm", "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"]
+run-args = ["-serial", "stdio", "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"]
