@@ -8,7 +8,8 @@ edition = "2018"
 [dependencies]
 bootloader = "0.9.18"
 x86_64 = "*"
-pc-keyboard = "0.5.1"
+uart_16550 = "*"
+pc-keyboard = "*"
 
 [package.metadata.bootimage]
 run-args = ["-serial", "stdio", "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04"]
