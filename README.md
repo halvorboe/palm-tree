@@ -12,8 +12,8 @@ https://os.phil-opp.com/
 https://github.com/rust-osdev/uart_16550
 
 ## Goals
-- [ ] Rust code prints to the screen.
-- [ ] Able to handle input.
+- [X] Rust code prints to the screen.
+- [X] Able to handle input.
 - [ ] Basic OS up and running.
 - [ ] Networking stack.
 - [ ] Able to load example.com to the screen.
