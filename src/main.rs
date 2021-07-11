@@ -2,15 +2,30 @@
 #![no_main]
 
 use core::panic::PanicInfo;
+// TODO: Stop using the library.
 use pc_keyboard::{layouts, HandleControl, KeyCode, KeyState, Keyboard, ScancodeSet1};
+// TODO: Stop using the library.
 use uart_16550::SerialPort;
 use x86_64::instructions::port::Port;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    // TODO: Implement a SpinLock.
+    // Displaying to the screen.
+    // TODO: Refactor into lazy_static and add support for println!.
     let vga_buffer = 0xb8000 as *mut u8;
+
+    // Reading from the PCI bus.
+    unsafe {
+        let mut pci_port = Port::<u32>::new(0xCF8);
+
+        let data = pci_port.read();
+
+        display(vga_buffer, data, 2, 0);
+    };
+
+    // Input from a serial port.
     let mut keyboard_port = unsafe { SerialPort::new(0x60) };
-    keyboard_port.send(42);
     keyboard_port.init();
     let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
 

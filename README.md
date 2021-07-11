@@ -1,28 +1,36 @@
 # PalmTree OS
 
-Imagine that you're stuck on a desert island and you're only option to escape is an eithernet cable leading to the mainland and an x86 computer without an operating system. What is the minimal OS needed to connect to the internet.
+Imagine that you're stuck on a desert island and you're only option to escape is an eithernet cable leading to the mainland and an x86 computer without an operating system. 
 
-This chances of this project being completed are low, but hopefully I'll learn something along the way.
+The point of this project is to get a deeper understanding of how OS are implemented and the full networking stack from hardware to HTTP.
 
-## Starting point
-
-I've looked around for minimal OS implementations. I want to write my OS in Rust. I'm basing it of the example in:
-
+I'm using this post as a reference to begin with:
 https://os.phil-opp.com/
-https://github.com/rust-osdev/uart_16550
+
+## 
+x86_64 - basic x86 instructions.
+bootloader - library to boot rust code.
+lazy_static - allows for static values that are loaded at run time.
+
+I'll use some libraries while developing, but I want to try to implement as much as possible from scratch. 
 
 ## Goals
-### External connection
+### Setup
 - [X] Display output on the screen
 - [X] Take input from the user.
-- [ ] Can read data from PCI.
+- [X] Can read data from bus.
 
 ### Barebones OS 
 - [ ] Basic utility functions. Macros for displaying on the screen.
 - [ ] Interrupt and exception handling.
 - [ ] Heap allocation and deallocation. 
+- [ ] Task running.
 
 ### Features
+- [ ] Basic shell.
+- [ ] PCI interface. Discovery, initialization.
+- [ ] Serial interface. (using library for now)
+- [ ] Keyboard input. (using library for now)
 - [ ] System calls and user space.
 - [ ] Networking stack.
 - [ ] Basic file system.
