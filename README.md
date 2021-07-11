@@ -16,4 +16,4 @@ https://github.com/rust-osdev/uart_16550
 - [X] Able to handle input.
 - [ ] Basic OS up and running.
 - [ ] Networking stack.
-- [ ] Able to load example.com to the screen.
+- [ ] Able to load http://example.com to the screen.
