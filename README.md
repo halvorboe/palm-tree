@@ -9,7 +9,10 @@ This chances of this project being completed are low, but hopefully I'll learn s
 I've looked around for minimal OS implementations. I want to write my OS in Rust. I'm basing it of the example in:
 
 https://os.phil-opp.com/
+
 https://github.com/rust-osdev/uart_16550
+
+https://github.com/thepowersgang/rust_os/blob/68ae46366ccf5fe0dcb96d9437dc6a0255ef501a/Kernel/Core/arch/amd64/pci.rs
 
 ## Goals
 ### External connection
