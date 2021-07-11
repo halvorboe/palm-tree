@@ -12,8 +12,18 @@ https://os.phil-opp.com/
 https://github.com/rust-osdev/uart_16550
 
 ## Goals
-- [X] Rust code prints to the screen.
-- [X] Able to handle input.
-- [ ] Basic OS up and running.
+### External connection
+- [X] Display output on the screen
+- [X] Take input from the user.
+- [ ] Can read data from PCI.
+
+### Barebones OS 
+- [ ] Basic utility functions. Macros for displaying on the screen.
+- [ ] Interrupt and exception handling.
+- [ ] Heap allocation and deallocation. 
+
+### Features
+- [ ] System calls and user space.
 - [ ] Networking stack.
-- [ ] Able to load http://example.com to the screen.
+- [ ] Basic file system.
+- [ ] File system.

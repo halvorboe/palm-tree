@@ -2,22 +2,17 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use pc_keyboard::{layouts, HandleControl, KeyState, Keyboard, ScancodeSet1};
+use pc_keyboard::{layouts, HandleControl, KeyCode, KeyState, Keyboard, ScancodeSet1};
 use uart_16550::SerialPort;
 use x86_64::instructions::port::Port;
-
-static SERIAL_IO_PORT: u16 = 0xf4;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     let vga_buffer = 0xb8000 as *mut u8;
     let mut keyboard_port = unsafe { SerialPort::new(0x60) };
+    keyboard_port.send(42);
     keyboard_port.init();
-    let mut keyboard = Keyboard::new(
-        layouts::Us104Key,
-        ScancodeSet1,
-        HandleControl::MapLettersToUnicode,
-    );
+    let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
 
     let mut pointer = 0;
     let mut prev = 0;
@@ -35,28 +30,38 @@ pub extern "C" fn _start() -> ! {
                         }
                         KeyState::Down => {}
                     }
-                    if code < 78 || prev == code {
+                    if prev == code {
                         continue;
                     }
-                    write(vga_buffer, pointer, code - 78 + 97);
-                    pointer += 1;
                     prev = code;
+                    match event.code {
+                        KeyCode::Spacebar => {
+                            pointer += 1;
+                        }
+                        KeyCode::Backspace => {
+                            if pointer > 0 {
+                                pointer -= 1;
+                                write(vga_buffer, pointer, 0);
+                            }
+                        }
+                        KeyCode::Escape => unsafe {
+                            exit();
+                        },
+                        _ => {
+                            if code < 78 {
+                                continue;
+                            }
+                            write(vga_buffer, pointer, code - 78 + 97);
+                            pointer += 1;
+                            prev = code;
+                        }
+                    }
                 }
                 Ok(None) => {
                     continue;
                 }
-                Err(e) => {
-                    write(vga_buffer, 40, 42);
-                }
+                Err(e) => {}
             }
-
-            //display(vga_buffer, data, 2, 100);
-            //display(vga_buffer, data >> 24, 2, 0);
-            //display(vga_buffer, data >> 24, 10, 40);
-            //display(vga_buffer, (data >> 16) % 256, 2, 9);
-            //display(vga_buffer, (data >> 8) % 256, 2, 18);
-            // display(vga_buffer, data, 2, 0);
-            // display(vga_buffer, data, 10, 10);
         }
     }
     unsafe {
