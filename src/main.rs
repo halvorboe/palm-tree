@@ -1,13 +1,60 @@
 #![no_std]
 #![no_main]
+#![feature(custom_test_frameworks)]
+#![reexport_test_harness_main = "test_main"]
+#![test_runner(crate::test_runner)]
+
+mod vga;
+mod panic;
+mod qemu;
+mod serial;
 
 use core::panic::PanicInfo;
-// TODO: Stop using the library.
-use pc_keyboard::{layouts, HandleControl, KeyCode, KeyState, Keyboard, ScancodeSet1};
-// TODO: Stop using the library.
-use uart_16550::SerialPort;
-use x86_64::instructions::port::Port;
+use qemu::*;
 
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Testable]) {
+    serial_println!("Running {} tests", tests.len());
+    for test in tests {
+        test.run();
+    }
+    exit_qemu(QemuExitCode::Success);
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl <T> Testable for T
+where
+    T: Fn(),
+{ 
+    fn run(&self) {
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self();
+        serial_println!("[ok]");
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn _start() -> ! {
+    #[cfg(test)]
+    test_main();
+
+    loop {}
+}
+
+#[test_case]
+fn passing() {
+    assert_eq!(1, 1);
+}
+
+/*
+// TODO: Stop using the library.
+// use pc_keyboard::{layouts, HandleControl, KeyCode, KeyState, Keyboard, ScancodeSet1};
+// TODO: Stop using the library.
+// use uart_16550::SerialPort;
+// use x86_64::instructions::port::Port;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     // TODO: Implement a SpinLock.
@@ -21,8 +68,10 @@ pub extern "C" fn _start() -> ! {
 
         let data = pci_port.read();
 
-        display(vga_buffer, data, 2, 0);
+        // display(vga_buffer, data, 2, 0);
     };
+
+    println!("TEST 123");
 
     // Input from a serial port.
     let mut keyboard_port = unsafe { SerialPort::new(0x60) };
@@ -87,7 +136,6 @@ pub extern "C" fn _start() -> ! {
 }
 
 /// This function is called on panic.
-#[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     unsafe {
         exit();
@@ -124,3 +172,5 @@ pub unsafe fn write(buffer: *mut u8, i: usize, byte: u8) {
     *buffer.offset(i as isize * 2) = byte;
     *buffer.offset(i as isize * 2 + 1) = 0xb;
 }
+*/
+
